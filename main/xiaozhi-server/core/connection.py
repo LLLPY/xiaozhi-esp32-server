@@ -44,11 +44,6 @@ TAG = __name__
 
 auto_import_modules("plugins_func.functions")
 
-
-class TTSException(RuntimeError):
-    pass
-
-
 class ConnectionHandler:
     def __init__(
             self,
