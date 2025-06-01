@@ -9,7 +9,6 @@ from core.handle.sendAudioHandle import send_stt_message
 from core.utils.util import remove_punctuation_and_length
 from core.providers.tts.dto.dto import ContentType, InterfaceType
 
-
 TAG = __name__
 
 WAKEUP_CONFIG = {
@@ -105,10 +104,10 @@ async def wakeupWordsResponse(conn):
     """唤醒词响应"""
     wakeup_word = random.choice(WAKEUP_CONFIG["words"])
     question = (
-        "此刻用户正在和你说```"
-        + wakeup_word
-        + "```。\n请你根据以上用户的内容，进行简短回复，文字内容控制在15个字以内。\n"
-        + "请勿对这条内容本身进行任何解释和回应，仅返回对用户的内容的回复。"
+            "此刻用户正在和你说```"
+            + wakeup_word
+            + "```。\n请你根据以上用户的内容，进行简短回复，文字内容控制在15个字以内。\n"
+            + "请勿对这条内容本身进行任何解释和回应，仅返回对用户的内容的回复。"
     )
     result = conn.llm.response_no_stream(conn.config["prompt"], question)
     if result is None or result == "":

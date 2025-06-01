@@ -322,6 +322,7 @@ class ConnectionHandler:
 
             if self.asr is None:
                 self.asr = self._initialize_asr()
+
             # 打开语音识别通道
             asyncio.run_coroutine_threadsafe(
                 self.asr.open_audio_channels(self), self.loop
@@ -329,6 +330,7 @@ class ConnectionHandler:
 
             if self.tts is None:
                 self.tts = self._initialize_tts()
+
             # 打开语音合成通道
             asyncio.run_coroutine_threadsafe(
                 self.tts.open_audio_channels(self), self.loop
