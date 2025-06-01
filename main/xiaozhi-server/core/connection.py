@@ -40,7 +40,6 @@ from core.providers.tts.dto.dto import ContentType, TTSMessageDTO, SentenceType
 from config.logger import setup_logging, build_module_string, update_module_string
 from config.manage_api_client import DeviceNotFoundException, DeviceBindException
 
-
 TAG = __name__
 
 auto_import_modules("plugins_func.functions")
@@ -52,14 +51,14 @@ class TTSException(RuntimeError):
 
 class ConnectionHandler:
     def __init__(
-        self,
-        config: Dict[str, Any],
-        _vad,
-        _asr,
-        _llm,
-        _memory,
-        _intent,
-        server=None,
+            self,
+            config: Dict[str, Any],
+            _vad,
+            _asr,
+            _llm,
+            _memory,
+            _intent,
+            server=None,
     ):
         self.common_config = config
         self.config = copy.deepcopy(config)
@@ -89,7 +88,6 @@ class ConnectionHandler:
 
         # 线程任务相关
         self.loop = asyncio.get_event_loop()
-        self.stop_event = threading.Event()
         self.executor = ThreadPoolExecutor(max_workers=5)
 
         # 添加上报线程池
@@ -141,10 +139,10 @@ class ConnectionHandler:
         self.load_function_plugin = False
         self.intent_type = "nointent"
 
+        # 连接超时相关参数
         self.timeout_task = None
-        self.timeout_seconds = (
-            int(self.config.get("close_connection_no_voice_time", 120)) + 60
-        )  # 在原来第一道关闭的基础上加60秒，进行二道关闭
+        self.timeout_seconds = (int(self.config.get("close_connection_no_voice_time", 120)))
+        self.stop_event = asyncio.Event()
 
         self.audio_format = "opus"
         # {"mcp":true} 表示启用MCP功能
@@ -716,7 +714,8 @@ class ConnectionHandler:
                         f"调用小智端MCP工具: {function_name}, 参数: {function_arguments}"
                     )
                     try:
-                        result = asyncio.run_coroutine_threadsafe(call_mcp_tool(self, self.mcp_client, function_name, function_arguments), self.loop).result()
+                        result = asyncio.run_coroutine_threadsafe(
+                            call_mcp_tool(self, self.mcp_client, function_name, function_arguments), self.loop).result()
                         self.logger.bind(tag=TAG).debug(f"MCP工具调用结果: {result}")
                         result = ActionResponse(action=Action.REQLLM, result=result, response="")
                     except Exception as e:
