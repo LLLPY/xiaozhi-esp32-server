@@ -319,12 +319,14 @@ class ConnectionHandler:
             """初始化本地组件"""
             if self.vad is None:
                 self.vad = self._vad
+
             if self.asr is None:
                 self.asr = self._initialize_asr()
             # 打开语音识别通道
             asyncio.run_coroutine_threadsafe(
                 self.asr.open_audio_channels(self), self.loop
             )
+
             if self.tts is None:
                 self.tts = self._initialize_tts()
             # 打开语音合成通道

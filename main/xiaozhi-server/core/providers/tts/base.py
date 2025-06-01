@@ -160,6 +160,7 @@ class TTSProviderBase(ABC):
     async def open_audio_channels(self, conn):
         self.conn = conn
         self.tts_timeout = conn.config.get("tts_timeout", 10)
+
         # tts 消化线程
         self.tts_priority_thread = threading.Thread(
             target=self.tts_text_priority_thread, daemon=True
@@ -185,7 +186,7 @@ class TTSProviderBase(ABC):
                     self.tts_text_buff = []
                     self.is_first_sentence = True
                     self.tts_audio_first_sentence = True
-                elif ContentType.TEXT == message.content_type:
+                elif message.content_type == ContentType.TEXT:
                     self.tts_text_buff.append(message.content_detail)
                     segment_text = self._get_segment_text()
                     if segment_text:
@@ -195,7 +196,7 @@ class TTSProviderBase(ABC):
                             self.tts_audio_queue.put(
                                 (message.sentence_type, audio_datas, segment_text)
                             )
-                elif ContentType.FILE == message.content_type:
+                elif message.content_type == ContentType.FILE:
                     self._process_remaining_text()
                     tts_file = message.content_file
                     if tts_file and os.path.exists(tts_file):
