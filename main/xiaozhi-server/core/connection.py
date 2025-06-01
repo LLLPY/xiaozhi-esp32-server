@@ -44,6 +44,7 @@ TAG = __name__
 
 auto_import_modules("plugins_func.functions")
 
+
 class ConnectionHandler:
     def __init__(
             self,
@@ -180,18 +181,18 @@ class ConnectionHandler:
             self.websocket = ws
             self.device_id = self.headers.get("device-id", None)
 
-            # 启动超时检查任务
-            self.timeout_task = asyncio.create_task(self._check_timeout())
-
             self.welcome_msg = self.config["xiaozhi"]
             self.welcome_msg["session_id"] = self.session_id
             await self.websocket.send(json.dumps(self.welcome_msg))
 
-            # 获取差异化配置
+            # 获取服务器上的配置
             self._initialize_private_config()
 
-            # 异步初始化
-            self.executor.submit(self._initialize_components)
+            # 初始化组件
+            self._initialize_components()
+
+            # 所有配置准备完毕后，才启动超时检查任务
+            self.timeout_task = asyncio.create_task(self._check_timeout())
 
             try:
                 async for message in self.websocket:
@@ -243,9 +244,11 @@ class ConnectionHandler:
 
     async def _route_message(self, message):
         """消息路由"""
+
         # 重置超时计时器
         await self.reset_timeout()
 
+        # 消息处理
         if isinstance(message, str):
             await handleTextMessage(self, message)
         elif isinstance(message, bytes):
@@ -336,6 +339,7 @@ class ConnectionHandler:
             """初始化上报线程"""
             self._init_report_threads()
         except Exception as e:
+            raise e
             self.logger.bind(tag=TAG).error(f"实例化组件失败: {e}")
 
     def _init_report_threads(self):
@@ -422,15 +426,11 @@ class ConnectionHandler:
         if private_config.get("LLM", None) is not None:
             init_llm = True
             self.config["LLM"] = private_config["LLM"]
-            self.config["selected_module"]["LLM"] = private_config["selected_module"][
-                "LLM"
-            ]
+            self.config["selected_module"]["LLM"] = private_config["selected_module"]["LLM"]
         if private_config.get("Memory", None) is not None:
             init_memory = True
             self.config["Memory"] = private_config["Memory"]
-            self.config["selected_module"]["Memory"] = private_config[
-                "selected_module"
-            ]["Memory"]
+            self.config["selected_module"]["Memory"] = private_config["selected_module"]["Memory"]
         if private_config.get("Intent", None) is not None:
             init_intent = True
             self.config["Intent"] = private_config["Intent"]
@@ -483,17 +483,13 @@ class ConnectionHandler:
 
         # 获取记忆总结配置
         memory_config = self.config["Memory"]
-        memory_type = self.config["Memory"][self.config["selected_module"]["Memory"]][
-            "type"
-        ]
+        memory_type = self.config["Memory"][self.config["selected_module"]["Memory"]]["type"]
         # 如果使用 nomen，直接返回
         if memory_type == "nomem":
             return
         # 使用 mem_local_short 模式
         elif memory_type == "mem_local_short":
-            memory_llm_name = memory_config[self.config["selected_module"]["Memory"]][
-                "llm"
-            ]
+            memory_llm_name = memory_config[self.config["selected_module"]["Memory"]].get('llm')
             if memory_llm_name and memory_llm_name in self.config["LLM"]:
                 # 如果配置了专用LLM，则创建独立的LLM实例
                 from core.utils import llm as llm_utils
