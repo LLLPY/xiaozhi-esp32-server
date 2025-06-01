@@ -173,6 +173,7 @@ class ConnectionHandler:
                     await ws.send("端口正常，如需测试连接，请使用test_page.html")
                     await self.close(ws)
                     return
+
             # 获取客户端ip地址
             self.client_ip = ws.remote_address[0]
             self.logger.bind(tag=TAG).info(
@@ -195,6 +196,7 @@ class ConnectionHandler:
 
             # 获取差异化配置
             self._initialize_private_config()
+
             # 异步初始化
             self.executor.submit(self._initialize_components)
 

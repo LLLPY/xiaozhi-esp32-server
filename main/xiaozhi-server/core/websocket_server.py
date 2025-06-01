@@ -14,6 +14,7 @@ class WebSocketServer:
         self.config = config
         self.logger = setup_logging()
         self.config_lock = asyncio.Lock()
+
         modules = initialize_modules(
             self.logger,
             self.config,
