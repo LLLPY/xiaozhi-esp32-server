@@ -46,9 +46,7 @@ async def handleTextMessage(conn, message):
                 conn.asr_audio.clear()
                 if "text" in msg_json:
                     original_text = msg_json["text"]  # 保留原始文本
-                    filtered_len, filtered_text = remove_punctuation_and_length(
-                        original_text
-                    )
+                    filtered_len, filtered_text = remove_punctuation_and_length(original_text)
 
                     # 识别是否是唤醒词
                     is_wakeup_words = filtered_text in conn.config.get("wakeup_words")
@@ -69,6 +67,7 @@ async def handleTextMessage(conn, message):
                         enqueue_asr_report(conn, original_text, [])
                         # 否则需要LLM对文字内容进行答复
                         await startToChat(conn, original_text)
+
         elif msg_json["type"] == "iot":
             conn.logger.bind(tag=TAG).info(f"收到iot消息：{message}")
             if "descriptors" in msg_json:

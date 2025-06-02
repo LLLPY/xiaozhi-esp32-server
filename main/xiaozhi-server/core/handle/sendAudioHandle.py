@@ -143,5 +143,6 @@ async def send_stt_message(conn, text):
     await conn.websocket.send(
         json.dumps({"type": "stt", "text": stt_text, "session_id": conn.session_id})
     )
+    print(f'发送了stt消息：{stt_text}')
     conn.client_is_speaking = True
     await send_tts_message(conn, "start")

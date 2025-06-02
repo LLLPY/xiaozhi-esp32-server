@@ -20,7 +20,6 @@ from core.providers.tts.dto.dto import (
     InterfaceType,
 )
 
-
 import traceback
 
 TAG = __name__
@@ -119,12 +118,12 @@ class TTSProviderBase(ABC):
         return audio_to_data(audio_file_path, is_opus=True)
 
     def tts_one_sentence(
-        self,
-        conn,
-        content_type,
-        content_detail=None,
-        content_file=None,
-        sentence_id=None,
+            self,
+            conn,
+            content_type,
+            content_detail=None,
+            content_file=None,
+            sentence_id=None,
     ):
         """发送一句话"""
         if not sentence_id:
@@ -258,7 +257,7 @@ class TTSProviderBase(ABC):
     def _get_segment_text(self):
         # 合并当前全部文本并处理未分割部分
         full_text = "".join(self.tts_text_buff)
-        current_text = full_text[self.processed_chars :]  # 从未处理的位置开始
+        current_text = full_text[self.processed_chars:]  # 从未处理的位置开始
         last_punct_pos = -1
 
         # 根据是否是第一句话选择不同的标点符号集合
@@ -271,7 +270,7 @@ class TTSProviderBase(ABC):
         for punct in punctuations_to_use:
             pos = current_text.rfind(punct)
             if (pos != -1 and last_punct_pos == -1) or (
-                pos != -1 and pos < last_punct_pos
+                    pos != -1 and pos < last_punct_pos
             ):
                 last_punct_pos = pos
 
@@ -313,10 +312,10 @@ class TTSProviderBase(ABC):
             audio_datas, _ = self.audio_to_opus_data(tts_file)
 
         if (
-            self.delete_audio_file
-            and tts_file is not None
-            and os.path.exists(tts_file)
-            and tts_file.startswith(self.output_file)
+                self.delete_audio_file
+                and tts_file is not None
+                and os.path.exists(tts_file)
+                and tts_file.startswith(self.output_file)
         ):
             os.remove(tts_file)
         return audio_datas
@@ -328,7 +327,7 @@ class TTSProviderBase(ABC):
             bool: 是否成功处理了文本
         """
         full_text = "".join(self.tts_text_buff)
-        remaining_text = full_text[self.processed_chars :]
+        remaining_text = full_text[self.processed_chars:]
         if remaining_text:
             segment_text = textUtils.get_string_no_punctuation_or_emoji(remaining_text)
             if segment_text:
@@ -337,6 +336,6 @@ class TTSProviderBase(ABC):
                 self.tts_audio_queue.put(
                     (SentenceType.MIDDLE, audio_datas, segment_text)
                 )
-                self.processed_chars += len(full_text)
+                self.processed_chars += len(remaining_text)
                 return True
         return False

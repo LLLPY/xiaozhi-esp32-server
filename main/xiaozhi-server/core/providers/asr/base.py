@@ -31,12 +31,13 @@ class ASRProviderBase(ABC):
     # 流式处理方式请在子类中重写
     async def receive_audio(self, audio, audio_have_voice):
         if (
-            self.conn.client_listen_mode == "auto"
-            or self.conn.client_listen_mode == "realtime"
+                self.conn.client_listen_mode == "auto"
+                or self.conn.client_listen_mode == "realtime"
         ):
             have_voice = audio_have_voice
         else:
             have_voice = self.conn.client_have_voice
+
         # 如果本次没有声音，本段也没声音，就把声音丢弃了
         self.conn.asr_audio.append(audio)
         if have_voice == False and self.conn.client_have_voice == False:
@@ -81,7 +82,7 @@ class ASRProviderBase(ABC):
 
     @abstractmethod
     async def speech_to_text(
-        self, opus_data: List[bytes], session_id: str
+            self, opus_data: List[bytes], session_id: str
     ) -> Tuple[Optional[str], Optional[str]]:
         """将语音数据转换为文本"""
         pass

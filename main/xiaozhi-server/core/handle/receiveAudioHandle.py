@@ -10,19 +10,23 @@ TAG = __name__
 
 
 async def handleAudioMessage(conn, audio):
-    if conn.vad is None:
-        conn.logger.bind(tag=TAG).warning("VAD模块未初始化，继续等待")
-        return
-    if conn.asr is None or not hasattr(conn.asr, "conn") or conn.asr.conn is None:
-        conn.logger.bind(tag=TAG).warning("ASR模块未初始化或通道未就绪，继续等待")
-        return
+    # if conn.vad is None:
+    #     conn.logger.bind(tag=TAG).warning("VAD模块未初始化，继续等待")
+    #     return
+    # if conn.asr is None or not hasattr(conn.asr, "conn") or conn.asr.conn is None:
+    #     conn.logger.bind(tag=TAG).warning("ASR模块未初始化或通道未就绪，继续等待")
+    #     return
+
     # 当前片段是否有人说话
     have_voice = conn.vad.is_vad(conn, audio)
-    if have_voice:
-        if conn.client_is_speaking:
-            await handleAbortMessage(conn)
+    # print(f'是否有人说话：{have_voice}', conn)
+    # if have_voice:
+    #     if conn.client_is_speaking:
+    #         await handleAbortMessage(conn)
+
     # 设备长时间空闲检测，用于say goodbye
     await no_voice_close_connect(conn, have_voice)
+
     # 接收音频
     await conn.asr.receive_audio(audio, have_voice)
 
