@@ -219,6 +219,7 @@ class TTSProviderBase(ABC):
                 continue
 
     def _audio_play_priority_thread(self):
+        """消费语音队列"""
         while not self.conn.stop_event.is_set():
             text = None
             try:
