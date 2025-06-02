@@ -252,7 +252,8 @@ class ConnectionHandler:
         if isinstance(message, str):
             await handleTextMessage(self, message)
         elif isinstance(message, bytes):
-            await handleAudioMessage(self, message)
+            if not self.client_is_speaking:
+                await handleAudioMessage(self, message)
 
     async def handle_restart(self, message):
         """处理服务器重启请求"""
@@ -570,6 +571,7 @@ class ConnectionHandler:
         self.logger.bind(tag=TAG).info(f"大模型收到用户消息: {query}")
         self.llm_finish_task = False
 
+        # 如果不是工具调用，就将它加入对话记录
         if not tool_call:
             self.dialogue.put(Message(role="user", content=query))
 
