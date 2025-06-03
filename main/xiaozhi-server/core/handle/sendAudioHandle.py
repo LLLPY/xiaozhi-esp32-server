@@ -53,6 +53,7 @@ async def sendAudioMessage(conn, sentenceType, audios, text):
         conn.tts.tts_audio_first_sentence = False
         pre_buffer = True
 
+    print(f'发送了tts语音给客户端...')
     await send_tts_message(conn, "sentence_start", text)
 
     await sendAudio(conn, audios, pre_buffer)

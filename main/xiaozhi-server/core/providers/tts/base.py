@@ -160,13 +160,13 @@ class TTSProviderBase(ABC):
         self.conn = conn
         self.tts_timeout = conn.config.get("tts_timeout", 10)
 
-        # tts 消化线程
+        # tts 用于将文本（用户的说话内容）转化为音频的异步线程
         self.tts_priority_thread = threading.Thread(
             target=self.tts_text_priority_thread, daemon=True
         )
         self.tts_priority_thread.start()
 
-        # 音频播放 消化线程
+        # 将音频发送给客户端播放
         self.audio_play_priority_thread = threading.Thread(
             target=self._audio_play_priority_thread, daemon=True
         )
