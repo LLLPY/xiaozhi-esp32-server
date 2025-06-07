@@ -19,6 +19,7 @@ class ASRProviderBase(ABC):
     def __init__(self):
         self.audio_format = "opus"
         self.conn = None
+        self.output_dir = '.'
 
     # 打开音频通道
     # 这里默认是非流式的处理方式

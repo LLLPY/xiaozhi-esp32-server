@@ -53,9 +53,7 @@ class ASRProvider(ASRProviderBase):
                 # device="cuda:0",  # 启用GPU加速
             )
 
-    async def speech_to_text(
-        self, opus_data: List[bytes], session_id: str
-    ) -> Tuple[Optional[str], Optional[str]]:
+    async def speech_to_text(self, opus_data: List[bytes], session_id: str) -> Tuple[Optional[str], Optional[str]]:
         """语音转文本主处理逻辑"""
         file_path = None
         retry_count = 0
